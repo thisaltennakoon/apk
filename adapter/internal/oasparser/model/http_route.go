@@ -264,7 +264,6 @@ func (swagger *AdapterInternalAPI) SetInfoHTTPRouteCR(httpRoute *gwapiv1b1.HTTPR
 	if apiPolicySelected != nil && apiPolicySelected.Spec.Override != nil && apiPolicySelected.Spec.Override.BackendJWTToken != nil {
 		loggers.LoggerOasparser.Info("Setting API Level Backend JWT Token Enable/Disable property")
 		swagger.backendJWTTokenInfo = parseBackendJWTTokenToInternal(apiPolicySelected.Spec.Override.BackendJWTToken)
-		fmt.Println("CLAIMS::::  ", swagger.backendJWTTokenInfo.CustomClaims)
 	}
 	return nil
 }

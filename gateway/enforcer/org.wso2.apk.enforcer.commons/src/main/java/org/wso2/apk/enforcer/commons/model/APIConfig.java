@@ -54,6 +54,7 @@ public class APIConfig {
     private GraphQLSchemaDTO graphQLSchemaDTO;
     private JWTConfigurationDto jwtConfigurationDto;
     private boolean systemAPI;
+    private byte[] apiDefinition;
     /**
      * getApiType returns the API type. This could be one of the following.
      * HTTP, WS, WEBHOOK
@@ -243,6 +244,14 @@ public class APIConfig {
         return systemAPI;
     }
 
+    /**
+     * Returns the API definition.
+     * @return byte array of the API definition.
+     */
+    public byte[] getApiDefinition() {
+        return apiDefinition;
+    }
+
     public JWTConfigurationDto getJwtConfigurationDto() {
         return jwtConfigurationDto;
     }
@@ -274,6 +283,7 @@ public class APIConfig {
         private boolean applicationSecurity;
         private GraphQLSchemaDTO graphQLSchemaDTO;
         private boolean systemAPI;
+        private byte[] apiDefinition;
         private JWTConfigurationDto jwtConfigurationDto;
         public Builder(String name) {
             this.name = name;
@@ -386,6 +396,10 @@ public class APIConfig {
             this.jwtConfigurationDto = jwtConfigurationDto;
             return this;
         }
+        public Builder apiDefinition(byte[] apiDefinition) {
+            this.apiDefinition = apiDefinition;
+            return this;
+        }
         public APIConfig build() {
             APIConfig apiConfig = new APIConfig();
             apiConfig.name = this.name;
@@ -411,6 +425,7 @@ public class APIConfig {
             apiConfig.graphQLSchemaDTO = this.graphQLSchemaDTO;
             apiConfig.systemAPI  = this.systemAPI;
             apiConfig.jwtConfigurationDto = this.jwtConfigurationDto;
+            apiConfig.apiDefinition = this.apiDefinition;
             return apiConfig;
         }
     }

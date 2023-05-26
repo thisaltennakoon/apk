@@ -64,6 +64,7 @@ type AdapterInternalAPI struct {
 	xWso2ApplicationSecurity bool
 	EnvType                  string
 	backendJWTTokenInfo      *BackendJWTTokenInfo
+	apiDefinitionFile        []byte
 	// GraphQLSchema              string
 	// GraphQLComplexities        GraphQLComplexityYaml
 	IsSystemAPI     bool
@@ -201,6 +202,11 @@ type Certificate struct {
 	Content []byte
 }
 
+// GetAPIDefinitionFile returns the API Definition File.
+func (swagger *AdapterInternalAPI) GetAPIDefinitionFile() []byte {
+	return swagger.apiDefinitionFile
+}
+
 // GetBackendJWTTokenInfo returns the BackendJWTTokenInfo Object.
 func (swagger *AdapterInternalAPI) GetBackendJWTTokenInfo() *BackendJWTTokenInfo {
 	return swagger.backendJWTTokenInfo
@@ -291,6 +297,11 @@ func (swagger *AdapterInternalAPI) SetClientCerts(certs []Certificate) {
 // SetID set the Id of the API
 func (swagger *AdapterInternalAPI) SetID(id string) {
 	swagger.id = id
+}
+
+// SetAPIDefinitionFile sets the API Definition File.
+func (swagger *AdapterInternalAPI) SetAPIDefinitionFile(file []byte) {
+	swagger.apiDefinitionFile = file
 }
 
 // SetName sets the name of the API

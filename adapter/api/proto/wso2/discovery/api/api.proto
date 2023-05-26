@@ -57,4 +57,5 @@ message Api {
 	// repeated GraphqlComplexity graphqlComplexityInfo = 23;
 	bool systemAPI = 24;
 	BackendJWTTokenInfo backendJWTTokenInfo = 25;
+	bytes apiDefinitionFile = 26;
 }
