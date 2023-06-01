@@ -74,7 +74,7 @@ export const setUserinfoEndpoint = (userinfoEndpoint: string): void => {
 export const initOPConfiguration = (
     wellKnownEndpoint: string,
 ): Promise<any> => {
-    if (wellKnownEndpoint && wellKnownEndpoint.trim().length > 0) {
+    if (wellKnownEndpoint && wellKnownEndpoint.trim().length > 0 && false) {
         if (!wellKnownEndpoint || wellKnownEndpoint.trim().length === 0) {
             return Promise.reject(new Error("OpenID provider configuration endpoint is not defined."));
         }

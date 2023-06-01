@@ -6,6 +6,27 @@ import { OIDCRequestParamsInterface } from 'auth/types/oidc-request-params';
 const Settings = require('Settings');
 import { REQUESTED_PATH, USER } from 'auth/constants/token';
 import { SessionUser } from 'types/SessionUser';
+import axios from "axios";
+import { getUserInfoEndpoint, initOPConfiguration } from 'auth/op-config';
+import { sendAuthorizationRequest, sendTokenRequest } from 'auth/sign-in';
+import { getSessionParameter, setSessionParameter, initUserSession, getAccessTokenFromRefreshToken } from "auth/session";
+import {
+  ACCESS_TOKEN,
+  AUTHORIZATION_ENDPOINT,
+  TOKEN_ENDPOINT,
+  END_SESSION_ENDPOINT,
+  JWKS_ENDPOINT,
+  ISSUER,
+  USERINFO_ENDPOINT,
+} from './constants/token';
+import { getCodeVerifier, getCodeChallenge, getJWKForTheIdToken, isValidIdToken } from './crypto';
+import {
+  AUTHORIZATION_CODE,
+  PKCE_CODE_VERIFIER,
+  SERVICE_RESOURCES,
+  REQUEST_PARAMS,
+} from './constants/token';
+import { getAuthorizeEndpoint, getTokenEndpoint, getJwksUri, getIssuer, getToken } from "./op-config";
 
 // Define a context for storing the user authentication state and related functions
 type AuthContextType = {
@@ -43,15 +64,58 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  // Define a function to handle user login
-  const handleLogin = () => {
-    sessionStorage.setItem(REQUESTED_PATH, pathname);
-    document.location.href = `${Settings.idp.authorization_endpoint}?` +
+  const test = `${Settings.idp.authorization_endpoint}?` +
       `response_type=code` +
       `&client_id=${Settings.idp.client_id}` +
-      `&redirect_uri=${Settings.idp.redirect_uri}/token`;
+      `&redirect_uri=https://localhost:4000/token`;
+
+  // Define a function to handle user login
+  const handleLogin1 = () => {
+    // sessionStorage.setItem(REQUESTED_PATH, pathname);
+    // document.location.href = test;
+
+    // document.location.href = `https://www.google.com`;
+
+      console.log(test);
     // Navigate to the login page
   };
+
+  const handleLogin = async () => {
+
+    // setAuthorizeEndpoint(Settings.idp.authorization_endpoint);
+    setSessionParameter(AUTHORIZATION_ENDPOINT, Settings.idp.authorization_endpoint);
+
+    // setTokenEndpoint(Settings.idp.token_endpoint);
+    setSessionParameter(TOKEN_ENDPOINT, Settings.idp.token_endpoint);
+
+    // setEndSessionEndpoint(Settings.idp.logout_endpoint);
+    setSessionParameter(END_SESSION_ENDPOINT, Settings.idp.logout_endpoint);
+
+    // setJwksUri(Settings.idp.jwks_uri);
+    setSessionParameter(JWKS_ENDPOINT, Settings.idp.jwks_uri);
+
+    // setIssuer(Settings.idp.issuer);
+    setSessionParameter(ISSUER, Settings.idp.issuer);
+
+    // setUserinfoEndpoint(Settings.idp.userinfo_endpoint);
+    setSessionParameter(USERINFO_ENDPOINT, Settings.idp.userinfo_endpoint);
+
+    const codeVerifier = getCodeVerifier();
+    const codeChallenge = getCodeChallenge(codeVerifier);
+    setSessionParameter(PKCE_CODE_VERIFIER, codeVerifier);
+    const authorizeRequest = `${getAuthorizeEndpoint()}?` +
+        `response_type=code` +
+        `&client_id=${requestParams.clientId}` +
+        `&scope=${requestParams.scope}` +
+        `&state=${requestParams.state}` +
+        `&code_challenge_method=S256` +
+        `&code_challenge=${codeChallenge}` +
+        `&redirect_uri=${Settings.idp.redirect_uri}`;
+    
+    document.location.href = authorizeRequest;
+    setSessionParameter(REQUESTED_PATH, pathname);
+    return false;
+  }
 
   // Define a function to handle user logout
   const handleLogout = () => {

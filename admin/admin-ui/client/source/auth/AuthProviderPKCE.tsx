@@ -38,7 +38,7 @@ interface AuthProviderProps {
 }
 
 // Define a higher-order component for wrapping the app with the AuthProvider context
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProviderPKCE = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);

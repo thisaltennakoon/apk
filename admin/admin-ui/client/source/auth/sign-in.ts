@@ -120,7 +120,21 @@ export const sendTokenRequest = (
         body.push(`code_verifier=${getSessionParameter(PKCE_CODE_VERIFIER)}`);
     }
 
-    return axios.post(tokenEndpoint, body.join("&"))
+    const base64EncodedKeyAndSecret = Buffer.from(`${Settings.idp.client_id}:${Settings.idp.client_secret}`).toString('base64');
+
+    const headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${base64EncodedKeyAndSecret}`,
+        'Host': Settings.idp.host,
+    };
+
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+    console.log(123);
+
+    return axios.post(tokenEndpoint, body.join("&"), {
+        headers: headers
+    })
         .then((response: any) => {
             if (response.status !== 200) {
                 return Promise.reject(new Error("Invalid status code received in the token response: "
@@ -151,6 +165,7 @@ export const sendTokenRequest = (
             }
 
         }).catch((error: any) => {
+            console.log(123);
             return Promise.reject(error);
         });
 };

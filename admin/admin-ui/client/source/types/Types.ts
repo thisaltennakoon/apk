@@ -71,35 +71,6 @@ export interface paths {
      */
     delete: operations["removeBusinessPlan"];
   };
-  "/throttling/policies/advanced": {
-    /**
-     * Get all Advanced Throttling Policies 
-     * @description Retrieves all existing advanced throttling policies.
-     */
-    get: operations["getAllAdvancedPolicy"];
-    /**
-     * Add an Advanced Throttling Policy 
-     * @description Add a new advanced throttling policy.
-     */
-    post: operations["addAdvancedPolicy"];
-  };
-  "/throttling/policies/advanced/{policyId}": {
-    /**
-     * Get an Advanced Throttling Policy 
-     * @description Retrieves an advanced throttling policy.
-     */
-    get: operations["getAdvancedPolicyById"];
-    /**
-     * Update an Advanced Throttling Policy 
-     * @description Updates an existing Advanced throttling policy.
-     */
-    put: operations["updateAdvancedPolicy"];
-    /**
-     * Delete an Advanced Throttling Policy 
-     * @description Deletes an advanced throttling policy.
-     */
-    delete: operations["removeAdvancedPolicy"];
-  };
   "/throttling/policies/export": {
     /**
      * Export a Throttling Policy 
@@ -198,51 +169,6 @@ export interface paths {
      */
     delete: operations["removeEnvironment"];
   };
-  "/bot-detection-data": {
-    /**
-     * Get all Bot Detected Data
-     *  
-     * @description Get all bot detected data
-     */
-    get: operations["getBotDetectionData"];
-  };
-  "/monetization/publish-usage": {
-    /**
-     * Publish Usage Records 
-     * @description Publish usage records of monetized APIs
-     */
-    post: operations["publishMonetizationRecords"];
-  };
-  "/monetization/publish-usage/status": {
-    /**
-     * Get the Status of Monetization Usage Publisher 
-     * @description Get the status of monetization usage publisher
-     */
-    get: operations["getMonetizationUsagePublisherStatus"];
-  };
-  "/workflows": {
-    /**
-     * Retrieve All Pending Workflow Processes
-     *  
-     * @description This operation can be used to retrieve list of workflow pending processes.
-     */
-    get: operations["getAllPendingWorkflows"];
-  };
-  "/workflows/{externalWorkflowRef}": {
-    /**
-     * Get Pending Workflow Details by External Workflow Reference
-     *  
-     * @description Using this operation, you can retrieve complete details of a pending workflow request that either belongs to application creation, application subscription, application registration, api state change, user self sign up.. You need to provide the External_Workflow_Reference of the workflow Request to retrieve it.
-     */
-    get: operations["getWorkflowByExternalRef"];
-  };
-  "/workflows/update-workflow-status": {
-    /**
-     * Update Workflow Status 
-     * @description This operation can be used to approve or reject a workflow task.
-     */
-    post: operations["updateWorkflowStatus"];
-  };
   "/tenant-info/{username}": {
     /**
      * Get Tenant Id of User
@@ -289,78 +215,6 @@ export interface paths {
      * @description Retrieve admin settings
      */
     get: operations["getAdminSettings"];
-  };
-  "/system-scopes/{scopeName}": {
-    /**
-     * Retrieve Scopes for a Particular User 
-     * @description This operation will return the scope list of particular user
-     * In order to get it, we need to pass the userId as a query parameter
-     */
-    get: operations["systemScopesScopeNameGet"];
-  };
-  "/system-scopes": {
-    /**
-     * Get Role Scope Mappings
-     *  
-     * @description This operation is used to get the list of role scope mapping from tenant-conf for the APK admin dashboard
-     */
-    get: operations["systemScopesGet"];
-    /**
-     * Update Roles For Scope
-     *  
-     * @description This operation is used to update the roles for all scopes
-     */
-    put: operations["updateRolesForScope"];
-  };
-  "/system-scopes/role-aliases": {
-    /**
-     * Retrieve Role Alias Mappings 
-     * @description This operation can be used to retrieve role alias mapping
-     */
-    get: operations["getRoleAliasMappings"];
-    /**
-     * Add a New Role Alias 
-     * @description This operation can be used to add a new role alias mapping for system scope roles
-     */
-    put: operations["addRoleAliasMapping"];
-  };
-  "/roles/{roleId}": {
-    /**
-     * Check Whether Given Role Name already Exist 
-     * @description Using this operation, user can check a given role name exists or not.
-     */
-    head: operations["validateSystemRole"];
-  };
-  "/tenant-theme": {
-    /**
-     * Export a DevPortal Tenant Theme 
-     * @description This operation can be used to export a DevPortal tenant theme as a zip file.
-     */
-    get: operations["exportTenantTheme"];
-    /**
-     * Import a DevPortal Tenant Theme 
-     * @description This operation can be used to import a DevPortal tenant theme.
-     */
-    put: operations["importTenantTheme"];
-  };
-  "/tenant-config": {
-    /**
-     * Export a tenant-Config. 
-     * @description This operation can be used to export a tenant-config.json used in deployment.
-     */
-    get: operations["exportTenantConfig"];
-    /**
-     * Update a tenant-config. 
-     * @description This operation can be used to update tenant-config.
-     */
-    put: operations["updateTenantConfig"];
-  };
-  "/tenant-config-schema": {
-    /**
-     * Export a tenant-Config-Schema. 
-     * @description This operation can be used to export a tenant-config-schema.json used in deployment.
-     */
-    get: operations["exportTenantConfigSchema"];
   };
   "/key-managers": {
     /**
@@ -436,6 +290,77 @@ export interface paths {
      */
     get: operations["getOrganizationByClaimValue"];
   };
+  "/workflows": {
+    /**
+     * Retrieve All Pending Workflow Processes
+     *  
+     * @description This operation can be used to retrieve list of workflow pending processes.
+     */
+    get: {
+      parameters: {
+        query: {
+          limit?: components["parameters"]["limit"];
+          offset?: components["parameters"]["offset"];
+          /**
+           * @description We need to show the values of each workflow process separately.For that we use workflow type.
+           * Workflow type can be APPLICATION_CREATION, SUBSCRIPTION_CREATION etc.
+           */
+          workflowType?: "APPLICATION_CREATION" | "KEY_GENERATION" | "SUBSCRIPTION_CREATION" | "LIFECYCLE_CHANGE";
+        };
+        header: {
+          Accept?: components["parameters"]["Accept"];
+        };
+      };
+      responses: {
+        /** @description OK. Workflow pendding process list returned. */
+        200: {
+          headers: {
+            /** @description The content type of the body. */
+            "Content-Type"?: string;
+          };
+          content: {
+            "application/json": components["schemas"]["WorkflowList"];
+          };
+        };
+        400: components["responses"]["BadRequest"];
+        404: components["responses"]["NotFound"];
+        406: components["responses"]["NotAcceptable"];
+      };
+    };
+  };
+  "/workflows/update-workflow-status": {
+    /**
+     * Update Workflow Status 
+     * @description This operation can be used to approve or reject a workflow task.
+     */
+    post: {
+      parameters: {
+        query: {
+          workflowReferenceId: components["parameters"]["workflowReferenceId-Q"];
+        };
+      };
+      /** @description Workflow event that need to be updated */
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["WorkflowInfo"];
+        };
+      };
+      responses: {
+        /** @description OK. Workflow request information is returned. */
+        200: {
+          headers: {
+            /** @description The content type of the body. */
+            "Content-Type"?: string;
+          };
+          content: {
+            "application/json": components["schemas"]["WorkflowInfo"];
+          };
+        };
+        400: components["responses"]["BadRequest"];
+        404: components["responses"]["NotFound"];
+      };
+    };
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -467,17 +392,6 @@ export interface components {
       code: string;
       /** @description Description about individual errors occurred */
       message: string;
-    };
-    /** Policy List */
-    PolicyList: {
-      /**
-       * @description Number of Policies returned.
-       *  
-       * @example 1
-       */
-      count?: number;
-      list?: (components["schemas"]["Policy"])[];
-      pagination?: components["schemas"]["Pagination"];
     };
     /** Policy List */
     PolicyDetailsList: {
@@ -561,30 +475,6 @@ export interface components {
       version?: string;
       data?: Record<string, never>;
     };
-    /** Advanced Throttling Policy */
-    AdvancedThrottlePolicyInfo: {
-      type: "AdvancedThrottlePolicyInfo";
-    } & Omit<components["schemas"]["Policy"], "type"> & {
-      defaultLimit?: components["schemas"]["ThrottleLimit"];
-    };
-    /** Advanced Throttling Policy */
-    AdvancedThrottlePolicy: {
-      type: "AdvancedThrottlePolicy";
-    } & Omit<components["schemas"]["Policy"], "type"> & {
-      defaultLimit: components["schemas"]["ThrottleLimit"];
-      /** @description Group of conditions which allow adding different parameter conditions to the throttling limit. */
-      conditionalGroups?: (components["schemas"]["ConditionalGroup"])[];
-    };
-    /** Advanced Throttling Policy List */
-    AdvancedThrottlePolicyList: {
-      /**
-       * @description Number of Advanced Throttling Policies returned.
-       *  
-       * @example 1
-       */
-      count?: number;
-      list?: (components["schemas"]["AdvancedThrottlePolicyInfo"])[];
-    };
     /** Application Throttling Policy */
     ApplicationRatePlan: {
       type: "ApplicationRatePlan";
@@ -666,119 +556,6 @@ export interface components {
       count?: number;
       list?: (components["schemas"]["BusinessPlan"])[];
     };
-    /** Conditional Groups for Throttling */
-    ConditionalGroup: {
-      /** @description Description of the Conditional Group */
-      description?: string;
-      /**
-       * @description Individual throttling conditions. They can be defined as either HeaderCondition, IPCondition, JWTClaimsCondition, QueryParameterCondition
-       * Please see schemas of each of those throttling condition in Definitions section.
-       *  
-       * @example [
-       *   {
-       *     "type": "HEADERCONDITION",
-       *     "invertCondition": false,
-       *     "headerCondition":
-       *     {
-       *       "headerName": "Host",
-       *       "headerValue": "10.100.7.77"
-       *     }
-       *   },
-       *   {
-       *     "type": "IPCONDITION",
-       *     "invertCondition": false,
-       *     "ipCondition":
-       *     {
-       *       "ipConditionType": "IPSPECIFIC",
-       *       "specificIP": "10.100.1.22",
-       *       "startingIP": null,
-       *       "endingIP": null
-       *     }
-       *   },
-       *   {
-       *     "type": "QUERYPARAMETERCONDITION",
-       *     "invertCondition": false,
-       *     "queryParameterCondition":
-       *     {
-       *       "parameterName": "name",
-       *       "parameterValue": "admin"
-       *     }
-       *   },
-       *   {
-       *     "type": "JWTCLAIMSCONDITION",
-       *     "invertCondition": true,
-       *     "jwtClaimsCondition":
-       *     {
-       *       "claimUrl": "claimUrl0",
-       *       "attribute": "claimAttr0"
-       *     }
-       *   }
-       * ]
-       */
-      conditions: (components["schemas"]["ThrottleCondition"])[];
-      limit: components["schemas"]["ThrottleLimit"];
-    };
-    /**
-     * Throttling Conditions 
-     * @description Conditions used for Throttling
-     */
-    ThrottleCondition: {
-      /**
-       * @description Type of the throttling condition. Allowed values are "HEADERCONDITION", "IPCONDITION", "JWTCLAIMSCONDITION"
-       * and "QUERYPARAMETERCONDITION".
-       *  
-       * @enum {string}
-       */
-      type: "HEADERCONDITION" | "IPCONDITION" | "JWTCLAIMSCONDITION" | "QUERYPARAMETERCONDITION";
-      /**
-       * @description Specifies whether inversion of the condition to be matched against the request.
-       * 
-       * **Note:** When you add conditional groups for advanced throttling policies, this parameter should have the
-       * same value ('true' or 'false') for the same type of conditional group.
-       *  
-       * @default false
-       */
-      invertCondition?: boolean;
-      headerCondition?: components["schemas"]["HeaderCondition"];
-      ipCondition?: components["schemas"]["IPCondition"];
-      jwtClaimsCondition?: components["schemas"]["JWTClaimsCondition"];
-      queryParameterCondition?: components["schemas"]["QueryParameterCondition"];
-    };
-    /** HTTP Header based throttling condition */
-    HeaderCondition: {
-      /** @description Name of the header */
-      headerName: string;
-      /** @description Value of the header */
-      headerValue: string;
-    };
-    /** IP based throttling condition */
-    IPCondition: {
-      /**
-       * @description Type of the IP condition. Allowed values are "IPRANGE" and "IPSPECIFIC" 
-       * @enum {string}
-       */
-      ipConditionType?: "IPRANGE" | "IPSPECIFIC";
-      /** @description Specific IP when "IPSPECIFIC" is used as the ipConditionType */
-      specificIP?: string;
-      /** @description Staring IP when "IPRANGE" is used as the ipConditionType */
-      startingIP?: string;
-      /** @description Ending IP when "IPRANGE" is used as the ipConditionType */
-      endingIP?: string;
-    };
-    /** JWT claim attribute based throttling condition */
-    JWTClaimsCondition: {
-      /** @description JWT claim URL */
-      claimUrl: string;
-      /** @description Attribute to be matched */
-      attribute: string;
-    };
-    /** Query parameter based throttling condition */
-    QueryParameterCondition: {
-      /** @description Name of the query parameter */
-      parameterName: string;
-      /** @description Value of the query parameter to be matched */
-      parameterValue: string;
-    };
     /** Throttle Limit Base */
     ThrottleLimitBase: {
       /**
@@ -806,19 +583,6 @@ export interface components {
       requestCount?: components["schemas"]["RequestCountLimit"];
       bandwidth?: components["schemas"]["BandwidthLimit"];
       eventCount?: components["schemas"]["EventCountLimit"];
-    };
-    /** API monetization details object */
-    MonetizationInfo: {
-      /**
-       * @description Flag to indicate the monetization plan 
-       * @example FixedRate 
-       * @enum {string}
-       */
-      monetizationPlan?: "FIXEDRATE" | "DYNAMICRATE";
-      /** @description Map of custom properties related to each monetization plan */
-      properties: {
-        [key: string]: string | undefined;
-      };
     };
     /** Bandwidth Limit object */
     BandwidthLimit: components["schemas"]["ThrottleLimitBase"] & {
@@ -1095,26 +859,6 @@ export interface components {
        */
       lastPublsihedTime?: string;
     };
-    /** workflow */
-    Workflow: {
-      /**
-       * @description This attribute declares whether this workflow task is approved or rejected.
-       *  
-       * @example APPROVED 
-       * @enum {string}
-       */
-      status: "APPROVED" | "REJECTED";
-      /**
-       * @description Custom attributes to complete the workflow task
-       *  
-       * @example {}
-       */
-      attributes?: {
-        [key: string]: string | undefined;
-      };
-      /** @example Approve workflow request. */
-      description?: string;
-    };
     /**
      * Tenant information 
      * @description The tenant information of the user
@@ -1161,6 +905,7 @@ export interface components {
        * ]
        */
       serviceNamespaces?: (string)[];
+      workflows?: (components["schemas"]["WorkflowProperties"])[];
       production?: (string)[];
       sandbox?: (string)[];
     };
@@ -1173,6 +918,84 @@ export interface components {
        */
       count?: number;
       list?: (components["schemas"]["Organization"])[];
+    };
+    /** WorkflowList */
+    WorkflowList: {
+      /**
+       * @description Number of workflow processes returned.
+       *  
+       * @example 1
+       */
+      count?: number;
+      /**
+       * @description Link to the next subset of resources qualified.
+       * Empty if no more resources are to be returned.
+       *  
+       * @example /workflows?limit=1&offset=2&user=
+       */
+      next?: string;
+      /**
+       * @description Link to the previous subset of resources qualified.
+       * Empty if current subset is the first subset returned.
+       *  
+       * @example /workflows?limit=1&offset=0&user=
+       */
+      previous?: string;
+      list?: (components["schemas"]["WorkflowInfo"])[];
+    };
+    /** workflow properties */
+    WorkflowProperties: {
+      /** @enum {string} */
+      name?: "APPLICATION_CREATION" | "KEY_GENERATION" | "SUBSCRIPTION_CREATION" | "LIFECYCLE_CHANGE";
+      enable?: boolean;
+      properties?: (string)[];
+    };
+    /** Workflow info object with basic workflow details */
+    WorkflowInfo: {
+      /**
+       * @description Type of the Workflow Request. It shows which type of request is it.
+       *  
+       * @example APPLICATION_CREATION 
+       * @enum {string}
+       */
+      workflowType?: "APPLICATION_CREATION" | "KEY_GENERATION" | "SUBSCRIPTION_CREATION" | "LIFECYCLE_CHANGE";
+      /**
+       * @description Show the Status of the the workflow request whether it is approved or created.
+       *  
+       * @example APPROVED 
+       * @enum {string}
+       */
+      workflowStatus?: "APPROVED" | "CREATED";
+      /**
+       * @description Time of the the workflow request created.
+       *  
+       * @example "2020-02-10T10:10:19.704Z"
+       */
+      createdTime?: string;
+      /**
+       * @description Time of the the workflow request updated.
+       *  
+       * @example "2020-02-10T10:10:19.704Z"
+       */
+      updatedTime?: string;
+      /**
+       * @description description is a message with basic details about the workflow request.
+       *  
+       * @example Approve application [APP1] creation request from application creator - admin with throttling tier - 10MinPer
+       */
+      description?: string;
+    };
+    /** workflow Response */
+    WorkflowResponse: {
+      /**
+       * @description This attribute declares whether this workflow task is approved or rejected.
+       *  
+       * @example APPROVED 
+       * @enum {string}
+       */
+      workflowStatus: "CREATED" | "APPROVED" | "REJECTED" | "REGISTERED";
+      /** @description Attributes that returned after the workflow execution */
+      jsonPayload?: string;
     };
     /** API Category */
     APICategory: {
@@ -1195,19 +1018,6 @@ export interface components {
       count?: number;
       list?: (components["schemas"]["APICategory"])[];
     };
-    /** File Information including meta data */
-    FileInfo: {
-      /**
-       * @description relative location of the file (excluding the base context and host of the Admin API) 
-       * @example api-categories/01234567-0123-0123-0123-012345678901/thumbnail
-       */
-      relativePath?: string;
-      /**
-       * @description media-type of the file 
-       * @example image/jpeg
-       */
-      mediaType?: string;
-    };
     /** Settings */
     Settings: {
       scopes?: (string)[];
@@ -1228,46 +1038,6 @@ export interface components {
        * @example false
        */
       analyticsEnabled?: boolean;
-    };
-    /** Scope Role Mapping List */
-    ScopeList: {
-      /**
-       * @description Number of scopes available for tenant.
-       *  
-       * @example 60
-       */
-      count?: number;
-      list?: (components["schemas"]["Scope"])[];
-    };
-    /** Scope Role */
-    Scope: {
-      /**
-       * @description Portal name.
-       *  
-       * @example publisher
-       */
-      tag?: string;
-      /**
-       * @description Scope name.
-       *  
-       * @example apk:api_publish
-       */
-      name?: string;
-      /**
-       * @description About scope.
-       *  
-       * @example Publish API
-       */
-      description?: string;
-      /**
-       * @description Roles for the particular scope.
-       *  
-       * @example [
-       *   "admin",
-       *   "Internal/publisher"
-       * ]
-       */
-      roles?: (string)[];
     };
     /** Key Manager Well-Known Response. */
     KeyManagerWellKnownResponse: {
@@ -1300,101 +1070,45 @@ export interface components {
        * @example
        */
       wellKnownEndpoint?: string;
-      /**
-       * @deprecated 
-       * @example https://localhost:9444/oauth2/introspect
-       */
-      introspectionEndpoint?: string;
-      /**
-       * @deprecated 
-       * @example https://localhost:9444/keymanager-operations/dcr/register
-       */
-      clientRegistrationEndpoint?: string;
-      /**
-       * @deprecated 
-       * @example https://localhost:9444/oauth2/token
-       */
-      tokenEndpoint?: string;
-      /**
-       * @deprecated 
-       * @example https://localhost:9444/oauth2/token
-       */
-      displayTokenEndpoint?: string;
-      /**
-       * @deprecated 
-       * @example https://localhost:9444/oauth2/revoke
-       */
-      revokeEndpoint?: string;
-      /**
-       * @deprecated 
-       * @example https://localhost:9444/oauth2/revoke
-       */
-      displayRevokeEndpoint?: string;
-      /**
-       * @deprecated 
-       * @example https://localhost:9444/oauth2/userinfo?schema=openid
-       */
-      userInfoEndpoint?: string;
-      /**
-       * @deprecated 
-       * @example https://localhost:9444/oauth2/authorize
-       */
-      authorizeEndpoint?: string;
       endpoints?: (components["schemas"]["KeyManagerEndpoint"])[];
-      certificates?: {
+      signingCertificate?: {
         /** @enum {string} */
         type?: "JWKS" | "PEM";
         value?: string;
       };
+      /** @description PEM type certificate */
+      tlsCertificate?: string;
       /** @example https://localhost:9444/services */
-      issuer?: string;
-      /**
-       * @description The alias of Identity Provider.
-       * If the tokenType is EXCHANGED, the alias value should be inclusive in the audience values of the JWT token
-       *  
-       * @example https://localhost:9443/oauth2/token
-       */
-      alias?: string;
-      /**
-       * @deprecated 
-       * @example https://wso2is.com:9444/api/identity/oauth2/v1.0/scopes
-       */
-      scopeManagementEndpoint?: string;
+      issuer: string;
       availableGrantTypes?: (string)[];
-      /** @example true */
+      /**
+       * @default true 
+       * @example true
+       */
       enableTokenGeneration?: boolean;
-      /**
-       * @default false 
-       * @example false
-       */
-      enableTokenEncryption?: boolean;
-      /**
-       * @default false 
-       * @example false
-       */
-      enableTokenHashing?: boolean;
       /**
        * @default false 
        * @example false
        */
       enableMapOAuthConsumerApps?: boolean;
       /**
-       * @default false 
+       * @default true 
+       * @example false
+       */
+      enableOauthAppValidation?: boolean;
+      /**
+       * @default true 
        * @example false
        */
       enableOAuthAppCreation?: boolean;
+      /** @example azp */
+      consumerKeyClaim?: string;
+      /** @example scopes */
+      scopesClaim?: string;
       /**
        * @default true 
        * @example true
        */
-      enableSelfValidationJWT?: boolean;
-      claimMapping?: (components["schemas"]["ClaimMappingEntry"])[];
-      /** @example azp */
-      consumerKeyClaim?: string;
-      /** @example scp */
-      scopesClaim?: string;
-      tokenValidation?: (components["schemas"]["TokenValidation"])[];
-      /** @example true */
       enabled?: boolean;
       /**
        * @example {
@@ -1404,13 +1118,6 @@ export interface components {
        * }
        */
       additionalProperties?: Record<string, never>;
-      /**
-       * @description The type of the tokens to be used (exchanged or without exchanged). Accepted values are EXCHANGED, DIRECT and BOTH. 
-       * @default DIRECT 
-       * @example EXCHANGED 
-       * @enum {string}
-       */
-      tokenType?: "EXCHANGED" | "DIRECT" | "BOTH";
     };
     /** Key Manager Endpoint. */
     KeyManagerEndpoint: {
@@ -1431,13 +1138,6 @@ export interface components {
       description?: string;
       /** @example true */
       enabled?: boolean;
-      /**
-       * @description The type of the tokens to be used (exchanged or without exchanged). Accepted values are EXCHANGED, DIRECT and BOTH. 
-       * @default DIRECT 
-       * @example EXCHANGED 
-       * @enum {string}
-       */
-      tokenType?: "EXCHANGED" | "DIRECT" | "BOTH";
     };
     /** Key Manager Configuration */
     KeyManagerConfiguration: {
@@ -1456,8 +1156,8 @@ export interface components {
       /** @example Enter username to connect to key manager */
       tooltip?: string;
       /** @example admin */
-      default?: Record<string, never>;
-      values?: (Record<string, never>)[];
+      default?: string;
+      values?: (string)[];
     };
     /** Key Manager List */
     KeyManagerList: {
@@ -1487,158 +1187,6 @@ export interface components {
       /** @enum {string} */
       type?: "REFERENCE" | "JWT" | "CUSTOM";
       value?: Record<string, never>;
-    };
-    /** Settings */
-    ScopeSettings: {
-      /** @example apk:subscribe */
-      name?: string;
-    };
-    /** WorkflowList */
-    WorkflowList: {
-      /**
-       * @description Number of workflow processes returned.
-       *  
-       * @example 1
-       */
-      count?: number;
-      /**
-       * @description Link to the next subset of resources qualified.
-       * Empty if no more resources are to be returned.
-       *  
-       * @example /workflows?limit=1&offset=2&user=
-       */
-      next?: string;
-      /**
-       * @description Link to the previous subset of resources qualified.
-       * Empty if current subset is the first subset returned.
-       *  
-       * @example /workflows?limit=1&offset=0&user=
-       */
-      previous?: string;
-      list?: (components["schemas"]["WorkflowInfo"])[];
-    };
-    /** Workflow info object with basic workflow details */
-    WorkflowInfo: {
-      /**
-       * @description Type of the Workflow Request. It shows which type of request is it.
-       *  
-       * @example APPLICATION_CREATION 
-       * @enum {string}
-       */
-      workflowType?: "APPLICATION_CREATION" | "SUBSCRIPTION_CREATION" | "USER_SIGNUP" | "APPLICATION_REGISTRATION_PRODUCTION" | "APPLICATION_REGISTRATION_SANDBOX" | "APPLICATION_DELETION" | "API_STATE" | "API_PRODUCT_STATE" | "SUBSCRIPTION_DELETION" | "SUBSCRIPTION_UPDATE";
-      /**
-       * @description Show the Status of the the workflow request whether it is approved or created.
-       *  
-       * @example APPROVED 
-       * @enum {string}
-       */
-      workflowStatus?: "APPROVED" | "CREATED";
-      /**
-       * @description Time of the the workflow request created.
-       *  
-       * @example "2020-02-10T10:10:19.704Z"
-       */
-      createdTime?: string;
-      /**
-       * @description Time of the the workflow request updated.
-       *  
-       * @example "2020-02-10T10:10:19.704Z"
-       */
-      updatedTime?: string;
-      /**
-       * @description Workflow external reference is used to identify the workflow requests uniquely.
-       *  
-       * @example 5871244b-d6f3-466e-8995-8accd1e64303
-       */
-      referenceId?: string;
-      properties?: Record<string, never>;
-      /**
-       * @description description is a message with basic details about the workflow request.
-       *  
-       * @example Approve application [APP1] creation request from application creator - admin with throttling tier - 10MinPer
-       */
-      description?: string;
-    };
-    /** workflow Response */
-    WorkflowResponse: {
-      /**
-       * @description This attribute declares whether this workflow task is approved or rejected.
-       *  
-       * @example APPROVED 
-       * @enum {string}
-       */
-      workflowStatus: "CREATED" | "APPROVED" | "REJECTED" | "REGISTERED";
-      /** @description Attributes that returned after the workflow execution */
-      jsonPayload?: string;
-    };
-    /** Bot Detection Data List */
-    BotDetectionDataList: {
-      /**
-       * @description Number of Bot Detection Data returned.
-       *  
-       * @example 1
-       */
-      count?: number;
-      list?: (components["schemas"]["BotDetectionData"])[];
-    };
-    /** Bot Detection Data */
-    BotDetectionData: {
-      /**
-       * Format: int64 
-       * @description The time of detection 
-       * @example 1591734138413
-       */
-      recordedTime?: number;
-      /**
-       * @description The message ID 
-       * @example urn:uuid:1ed6d2de-29df-4fed-a96a-46d2329dce65
-       */
-      messageID?: string;
-      /**
-       * @description The api method 
-       * @example GET
-       */
-      apiMethod?: string;
-      /**
-       * @description The header set 
-       * @example [Accept=*\/*, Host=localhost:8243, User-Agent=curl/7.58.0]
-       */
-      headerSet?: string;
-      /**
-       * @description The content of the message body 
-       * @example <soapenv:Body xmlns:soapenv=\"http://www.w3.org/2003/05/soap-envelope\"/>
-       */
-      messageBody?: string;
-      /**
-       * @description The IP of the client 
-       * @example 127.0.0.1
-       */
-      clientIp?: string;
-    };
-    /** Role alias list */
-    RoleAliasList: {
-      /**
-       * @description The number of role aliases 
-       * @example 1
-       */
-      count?: number;
-      list?: (components["schemas"]["RoleAlias"])[];
-    };
-    /** Role alias */
-    RoleAlias: {
-      /**
-       * @description The original role 
-       * @example Internal/subscriber
-       */
-      role?: string;
-      /**
-       * @description The role mapping for role alias 
-       * @example [
-       *   "Subscriber",
-       *   "Internal/subscriber"
-       * ]
-       */
-      aliases?: (string)[];
     };
     /** Pagination */
     Pagination: {
@@ -1729,16 +1277,16 @@ export interface components {
      * @description Validator for conditional requests; based on the ETag of the formerly retrieved
      * variant of the resource.
      */
-    "If-None-Match": string;
+    "If-None-Match"?: string;
     /**
      * @description For cross-tenant invocations, this is used to specify the tenant domain, where the resource need to be
      *   retirieved from.
      */
-    requestedTenant: string;
+    requestedTenant?: string;
     /** @description Criteria for sorting. */
-    sortBy: "apiName" | "version" | "createdTime" | "status";
+    sortBy?: "apiName" | "version" | "createdTime" | "status";
     /** @description Order of sorting(ascending/descending). */
-    sortOrder: "asc" | "desc";
+    sortOrder?: "asc" | "desc";
     /** @description username of the new application owner */
     username: string;
     /** @description Base64 URL encoded value of the scope name to be validated */
@@ -1754,15 +1302,15 @@ export interface components {
     /** @description Application UUID */
     applicationId: string;
     /** @description Media types acceptable for the response. Default is application/json. */
-    Accept: string;
+    Accept?: string;
     /** @description Media type of the entity in the body. Default is application/json. */
     "Content-Type": string;
     /** @description Maximum size of resource array to return. */
-    limit: number;
+    limit?: number;
     /** @description Starting point within the complete list of items qualified. */
-    offset: number;
+    offset?: number;
     /** @description username of the application creator */
-    user: string;
+    user?: string;
     /** @description Workflow reference id */
     "workflowReferenceId-Q": string;
     /** @description API Category UUID */
@@ -1787,26 +1335,23 @@ export type external = Record<string, never>;
 
 export interface operations {
 
+  /**
+   * Retrieve/Search Policies
+   *  
+   * @description This operation provides you a list of available Policies qualifying the given keyword match.
+   */
   policySearch: {
-    /**
-     * Retrieve/Search Policies
-     *  
-     * @description This operation provides you a list of available Policies qualifying the given keyword match.
-     */
-    parameters?: {
+    parameters: {
+      query: {
         /**
          * @description **Search**.
          * You can search by providing a keyword. Allowed to search by type and name only.
          */
-      query?: {
         query?: string;
       };
     };
     responses: {
-      /**
-       * @description OK.
-       * List of qualifying Policies is returned.
-       */
+      /** @description OK.List of qualifying Policies is returned. */
       200: {
         headers: {
           /** @description The content type of the body. */
@@ -1818,16 +1363,18 @@ export interface operations {
       };
     };
   };
+  /**
+   * Get all Application Rate Plans 
+   * @description Retrieves all existing application rate plans.
+   */
   getApplicationRatePlans: {
-    /**
-     * Get all Application Rate Plans 
-     * @description Retrieves all existing application rate plans.
-     */
+    parameters: {
+      header: {
+        Accept?: components["parameters"]["Accept"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Policies returned
-       */
+      /** @description OK. Policies returned */
       200: {
         headers: {
           /** @description The content type of the body. */
@@ -1840,11 +1387,16 @@ export interface operations {
       406: components["responses"]["NotAcceptable"];
     };
   };
+  /**
+   * Add an Application Rate Plan 
+   * @description This operation can be used to add a new application level rate plan.
+   */
   addApplicationRatePlan: {
-    /**
-     * Add an Application Rate Plan 
-     * @description This operation can be used to add a new application level rate plan.
-     */
+    parameters: {
+      header: {
+        "Content-Type": components["parameters"]["Content-Type"];
+      };
+    };
     /** @description Application level policy object that should to be added */
     requestBody: {
       content: {
@@ -1852,11 +1404,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description Created.
-       * Successful response with the newly created object as entity in the body.
-       * Location header contains URL of newly created entity.
-       */
+      /** @description Created. Successful response with the newly created object as entity in the body. Location header contains URL of newly created entity. */
       201: {
         headers: {
           /** @description Location of the newly created Policy object. */
@@ -1872,16 +1420,18 @@ export interface operations {
       415: components["responses"]["UnsupportedMediaType"];
     };
   };
+  /**
+   * Get an Application Rate Plan 
+   * @description Retrieves an application rate plan.
+   */
   getApplicationRatePlanById: {
-    /**
-     * Get an Application Rate Plan 
-     * @description Retrieves an application rate plan.
-     */
+    parameters: {
+      path: {
+        planId: components["parameters"]["planId"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Plan returned
-       */
+      /** @description OK. Plan returned */
       200: {
         headers: {
           /** @description The content type of the body. */
@@ -1895,11 +1445,19 @@ export interface operations {
       406: components["responses"]["NotAcceptable"];
     };
   };
+  /**
+   * Update an Application Rate Plan 
+   * @description Updates an existing application level rate plan. Upon a successful update, you will receive the updated application plan as the response.
+   */
   updateApplicationRatePlan: {
-    /**
-     * Update an Application Rate Plan 
-     * @description Updates an existing application level rate plan. Upon a successful update, you will receive the updated application plan as the response.
-     */
+    parameters: {
+      header: {
+        "Content-Type": components["parameters"]["Content-Type"];
+      };
+      path: {
+        planId: components["parameters"]["planId"];
+      };
+    };
     /** @description Policy object that needs to be modified */
     requestBody: {
       content: {
@@ -1907,10 +1465,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description OK.
-       * Plan updated.
-       */
+      /** @description OK. Plan updated. */
       200: {
         headers: {
           /** @description The URL of the newly created resource. */
@@ -1926,16 +1481,18 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Delete an Application Rate Plan 
+   * @description Deletes an application level rate plan.
+   */
   removeApplicationRatePlan: {
-    /**
-     * Delete an Application Rate Plan 
-     * @description Deletes an application level rate plan.
-     */
+    parameters: {
+      path: {
+        planId: components["parameters"]["planId"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Resource successfully deleted.
-       */
+      /** @description OK. Resource successfully deleted. */
       200: {
         content: {
         };
@@ -1943,16 +1500,18 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Get all Business Plans 
+   * @description This operation can be used to retrieve all Business Plans.
+   */
   getAllBusinessPlans: {
-    /**
-     * Get all Business Plans 
-     * @description This operation can be used to retrieve all Business Plans.
-     */
+    parameters: {
+      header: {
+        Accept?: components["parameters"]["Accept"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Plans returned
-       */
+      /** @description OK. Plans returned */
       200: {
         headers: {
           /** @description The content type of the body. */
@@ -1965,11 +1524,16 @@ export interface operations {
       406: components["responses"]["NotAcceptable"];
     };
   };
+  /**
+   * Add a Business Plan 
+   * @description This operation can be used to add a  Business Plan specifying the details of the plan in the payload.
+   */
   addBusinessPlan: {
-    /**
-     * Add a Business Plan 
-     * @description This operation can be used to add a  Business Plan specifying the details of the plan in the payload.
-     */
+    parameters: {
+      header: {
+        "Content-Type": components["parameters"]["Content-Type"];
+      };
+    };
     /** @description Business Plan object that should to be added */
     requestBody: {
       content: {
@@ -1977,11 +1541,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description Created.
-       * Successful response with the newly created object as entity in the body.
-       * Location header contains URL of newly created entity.
-       */
+      /** @description Created. Successful response with the newly created object as entity in the body. Location header contains URL of newly created entity. */
       201: {
         headers: {
           /** @description Location of the newly created Plan object. */
@@ -1997,16 +1557,18 @@ export interface operations {
       415: components["responses"]["UnsupportedMediaType"];
     };
   };
+  /**
+   * Get a Business Plan 
+   * @description This operation can be used to retrieves Business Plan by specifying the Id of the plan as a path parameter
+   */
   getBusinessPlanById: {
-    /**
-     * Get a Business Plan 
-     * @description This operation can be used to retrieves Business Plan by specifying the Id of the plan as a path parameter
-     */
+    parameters: {
+      path: {
+        planId: components["parameters"]["planId"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Plan returned
-       */
+      /** @description OK. Plan returned */
       200: {
         headers: {
           /** @description The content type of the body. */
@@ -2020,11 +1582,19 @@ export interface operations {
       406: components["responses"]["NotAcceptable"];
     };
   };
+  /**
+   * Update a Business Plan 
+   * @description Updates an existing Business Plan.
+   */
   updateBusinessPlan: {
-    /**
-     * Update a Business Plan 
-     * @description Updates an existing Business Plan.
-     */
+    parameters: {
+      header: {
+        "Content-Type": components["parameters"]["Content-Type"];
+      };
+      path: {
+        planId: components["parameters"]["planId"];
+      };
+    };
     /** @description Plan object that needs to be modified */
     requestBody: {
       content: {
@@ -2032,10 +1602,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description OK.
-       * Plan updated.
-       */
+      /** @description OK. Plan updated. */
       200: {
         headers: {
           /** @description The URL of the newly created resource. */
@@ -2051,16 +1618,18 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Delete a Business Plan 
+   * @description This operation can be used to delete a business plan by specifying the Id of the plan as a path parameter.
+   */
   removeBusinessPlan: {
-    /**
-     * Delete a Business Plan 
-     * @description This operation can be used to delete a business plan by specifying the Id of the plan as a path parameter.
-     */
+    parameters: {
+      path: {
+        planId: components["parameters"]["planId"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Resource successfully deleted.
-       */
+      /** @description OK. Resource successfully deleted. */
       200: {
         content: {
         };
@@ -2068,153 +1637,25 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
-  getAllAdvancedPolicy: {
-    /**
-     * Get all Advanced Throttling Policies 
-     * @description Retrieves all existing advanced throttling policies.
-     */
-    responses: {
-      /**
-       * @description OK.
-       * Policies returned
-       */
-      200: {
-        headers: {
-          /** @description The content type of the body. */
-          "Content-Type"?: string;
-        };
-        content: {
-          "application/json": components["schemas"]["AdvancedThrottlePolicyList"];
-        };
-      };
-      406: components["responses"]["NotAcceptable"];
-    };
-  };
-  addAdvancedPolicy: {
-    /**
-     * Add an Advanced Throttling Policy 
-     * @description Add a new advanced throttling policy.
-     */
-    /** @description Advanced level policy object that should to be added */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AdvancedThrottlePolicy"];
-      };
-    };
-    responses: {
-      /**
-       * @description Created.
-       * Successful response with the newly created object as entity in the body.
-       * Location header contains URL of newly created entity.
-       */
-      201: {
-        headers: {
-          /** @description Location of the newly created Advanced Throttling Policy. */
-          Location?: string;
-          /** @description The content type of the body. */
-          "Content-Type"?: string;
-        };
-        content: {
-          "application/json": components["schemas"]["AdvancedThrottlePolicy"];
-        };
-      };
-      400: components["responses"]["BadRequest"];
-      415: components["responses"]["UnsupportedMediaType"];
-    };
-  };
-  getAdvancedPolicyById: {
-    /**
-     * Get an Advanced Throttling Policy 
-     * @description Retrieves an advanced throttling policy.
-     */
-    responses: {
-      /**
-       * @description OK.
-       * Policy returned
-       */
-      200: {
-        headers: {
-          /** @description The content type of the body. */
-          "Content-Type"?: string;
-        };
-        content: {
-          "application/json": components["schemas"]["AdvancedThrottlePolicy"];
-        };
-      };
-      404: components["responses"]["NotFound"];
-      406: components["responses"]["NotAcceptable"];
-    };
-  };
-  updateAdvancedPolicy: {
-    /**
-     * Update an Advanced Throttling Policy 
-     * @description Updates an existing Advanced throttling policy.
-     */
-    /** @description Policy object that needs to be modified */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["AdvancedThrottlePolicy"];
-      };
-    };
-    responses: {
-      /**
-       * @description OK.
-       * Policy updated.
-       */
-      200: {
-        headers: {
-          /** @description The URL of the newly created resource. */
-          Location?: string;
-          /** @description The content type of the body. */
-          "Content-Type"?: string;
-        };
-        content: {
-          "application/json": components["schemas"]["AdvancedThrottlePolicy"];
-        };
-      };
-      400: components["responses"]["BadRequest"];
-      404: components["responses"]["NotFound"];
-    };
-  };
-  removeAdvancedPolicy: {
-    /**
-     * Delete an Advanced Throttling Policy 
-     * @description Deletes an advanced throttling policy.
-     */
-    responses: {
-      /**
-       * @description OK.
-       * Resource successfully deleted.
-       */
-      200: {
-        content: {
-        };
-      };
-      404: components["responses"]["NotFound"];
-    };
-  };
+  /**
+   * Export a Throttling Policy 
+   * @description This operation can be used to export the details of a particular Throttling Policy.
+   */
   exportThrottlingPolicy: {
-    /**
-     * Export a Throttling Policy 
-     * @description This operation can be used to export the details of a particular Throttling Policy.
-     */
-    parameters?: {
+    parameters: {
+      query: {
         /** @description UUID of the ThrottlingPolicy */
-        /** @description Throttling Policy Name */
-        /** @description Type of the Throttling Policy */
-        /** @description Format of output documents. Can be YAML or JSON. */
-      query?: {
         policyId?: string;
+        /** @description Throttling Policy Name */
         name?: string;
+        /** @description Type of the Throttling Policy */
         type?: "sub" | "app" | "api" | "global";
+        /** @description Format of output documents. Can be YAML or JSON. */
         format?: "JSON" | "YAML";
       };
     };
     responses: {
-      /**
-       * @description OK.
-       * Export Successful.
-       */
+      /** @description OK. Export Successful. */
       200: {
         headers: {
           /** @description The content type of the body. */
@@ -2228,14 +1669,14 @@ export interface operations {
       500: components["responses"]["InternalServerError"];
     };
   };
+  /**
+   * Import a Throttling Policy 
+   * @description This operation can be used to import a Throttling Policy.
+   */
   importThrottlingPolicy: {
-    /**
-     * Import a Throttling Policy 
-     * @description This operation can be used to import a Throttling Policy.
-     */
-    parameters?: {
+    parameters: {
+      query: {
         /** @description Update an existing throttling policy with the same name. */
-      query?: {
         overwrite?: boolean;
       };
     };
@@ -2251,10 +1692,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description Created.
-       * Throttling Policy Imported Successfully.
-       */
+      /** @description Created. Throttling Policy Imported Successfully. */
       200: never;
       403: components["responses"]["Forbidden"];
       404: components["responses"]["NotFound"];
@@ -2262,16 +1700,18 @@ export interface operations {
       500: components["responses"]["InternalServerError"];
     };
   };
+  /**
+   * Get all Deny Policies 
+   * @description Retrieves all existing deny policies.
+   */
   getAllDenyPolicies: {
-    /**
-     * Get all Deny Policies 
-     * @description Retrieves all existing deny policies.
-     */
+    parameters: {
+      header: {
+        Accept?: components["parameters"]["Accept"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Deny Policies returned
-       */
+      /** @description OK. Deny Policies returned */
       200: {
         headers: {
           /** @description The content type of the body. */
@@ -2284,11 +1724,16 @@ export interface operations {
       406: components["responses"]["NotAcceptable"];
     };
   };
+  /**
+   * Add a deny policy 
+   * @description Adds a new deny policy
+   */
   addDenyPolicy: {
-    /**
-     * Add a deny policy 
-     * @description Adds a new deny policy
-     */
+    parameters: {
+      header: {
+        "Content-Type": components["parameters"]["Content-Type"];
+      };
+    };
     /** @description Blocking condition object that should to be added */
     requestBody: {
       content: {
@@ -2296,11 +1741,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description Created.
-       * Successful response with the newly created object as entity in the body.
-       * Location header contains URL of newly created entity.
-       */
+      /** @description Created. Successful response with the newly created object as entity in the body. Location header contains URL of newly created entity. */
       201: {
         headers: {
           /** @description Location of the newly created resource. */
@@ -2316,16 +1757,18 @@ export interface operations {
       415: components["responses"]["UnsupportedMediaType"];
     };
   };
+  /**
+   * Get a Deny Policy 
+   * @description Retrieves a Deny policy providing the policy Id
+   */
   getDenyPolicyById: {
-    /**
-     * Get a Deny Policy 
-     * @description Retrieves a Deny policy providing the policy Id
-     */
+    parameters: {
+      path: {
+        policyId: components["parameters"]["policyId"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Condition returned
-       */
+      /** @description OK. Condition returned */
       200: {
         headers: {
           /** @description The content type of the body. */
@@ -2339,16 +1782,18 @@ export interface operations {
       406: components["responses"]["NotAcceptable"];
     };
   };
+  /**
+   * Delete a Deny Policy 
+   * @description Deletes an existing deny policy
+   */
   removeDenyPolicy: {
-    /**
-     * Delete a Deny Policy 
-     * @description Deletes an existing deny policy
-     */
+    parameters: {
+      path: {
+        policyId: components["parameters"]["policyId"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Resource successfully deleted.
-       */
+      /** @description OK. Resource successfully deleted. */
       200: {
         content: {
         };
@@ -2356,11 +1801,19 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Update a Deny Policy 
+   * @description Update a deny policy by Id
+   */
   updateDenyPolicy: {
-    /**
-     * Update a Deny Policy 
-     * @description Update a deny policy by Id
-     */
+    parameters: {
+      header: {
+        "Content-Type": components["parameters"]["Content-Type"];
+      };
+      path: {
+        policyId: components["parameters"]["policyId"];
+      };
+    };
     /** @description Blocking condition with updated status */
     requestBody: {
       content: {
@@ -2368,10 +1821,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description OK.
-       * Resource successfully updated.
-       */
+      /** @description OK. Resource successfully updated. */
       200: {
         content: {
           "application/json": components["schemas"]["BlockingCondition"];
@@ -2381,33 +1831,36 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Retrieve/Search Applications
+   *  
+   * @description This operation can be used to retrieve list of applications owned by the given user, If no user
+   * is provided, the applications owned by the user associated with the provided access token will be returned.
+   */
   getApplicationsByUser: {
-    /**
-     * Retrieve/Search Applications
-     *  
-     * @description This operation can be used to retrieve list of applications owned by the given user, If no user
-     * is provided, the applications owned by the user associated with the provided access token will be returned.
-     */
-    parameters?: {
+    parameters: {
+      query: {
+        user?: components["parameters"]["user"];
+        limit?: components["parameters"]["limit"];
+        offset?: components["parameters"]["offset"];
         /** @description Application Name */
+        name?: string;
         /**
          * @description Tenant domain of the applications to get. This has to be specified only if it is required to get applications of
          * a tenant other than the requester's tenant. So, if not specified, the default will be set as the
          * requester's tenant domain. This cross tenant Application access is allowed only for super tenant admin
          * users **only at a migration process**.
          */
-      query?: {
-        name?: string;
         tenantDomain?: string;
         sortBy?: "name" | "owner";
         sortOrder?: "asc" | "desc";
       };
+      header: {
+        Accept?: components["parameters"]["Accept"];
+      };
     };
     responses: {
-      /**
-       * @description OK.
-       * Application list returned.
-       */
+      /** @description OK. Application list returned. */
       200: {
         headers: {
           /** @description The content type of the body. */
@@ -2421,17 +1874,19 @@ export interface operations {
       406: components["responses"]["NotAcceptable"];
     };
   };
+  /**
+   * Get the details of an Application
+   *  
+   * @description This operation can be used to get the details of an application by specifying its id.
+   */
   getApplicationById: {
-    /**
-     * Get the details of an Application
-     *  
-     * @description This operation can be used to get the details of an application by specifying its id.
-     */
+    parameters: {
+      path: {
+        applicationId: components["parameters"]["applicationId"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Application details returned.
-       */
+      /** @description OK. Application details returned. */
       200: {
         content: {
           "application/json": components["schemas"]["Application"];
@@ -2442,25 +1897,24 @@ export interface operations {
       406: components["responses"]["NotAcceptable"];
     };
   };
+  /**
+   * Delete an Application
+   *  
+   * @description This operation can be used to delete an application by specifying its id.
+   */
   removeApplication: {
-    /**
-     * Delete an Application
-     *  
-     * @description This operation can be used to delete an application by specifying its id.
-     */
+    parameters: {
+      path: {
+        applicationId: components["parameters"]["applicationId"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Resource successfully deleted.
-       */
+      /** @description OK. Resource successfully deleted. */
       200: {
         content: {
         };
       };
-      /**
-       * @description Accepted.
-       * The request has been accepted.
-       */
+      /** @description Accepted. The request has been accepted. */
       202: {
         headers: {
           /** @description Location of the existing Application. */
@@ -2473,22 +1927,22 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Change Application Owner 
+   * @description This operation is used to change the owner of an Application.
+   * In order to change the owner of an application, we need to pass the new application owner as a query parameter
+   */
   changeApplicationOwner: {
-    /**
-     * Change Application Owner 
-     * @description This operation is used to change the owner of an Application.
-     * In order to change the owner of an application, we need to pass the new application owner as a query parameter
-     */
     parameters: {
       query: {
         owner: string;
       };
+      path: {
+        applicationId: components["parameters"]["applicationId"];
+      };
     };
     responses: {
-      /**
-       * @description OK.
-       * Application owner changed successfully.
-       */
+      /** @description OK. Application owner changed successfully. */
       200: {
         content: {
         };
@@ -2497,16 +1951,13 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Get all registered Environments 
+   * @description Get all Registered Environments
+   */
   getEnvironments: {
-    /**
-     * Get all registered Environments 
-     * @description Get all Registered Environments
-     */
     responses: {
-      /**
-       * @description OK.
-       * Environments returned
-       */
+      /** @description OK. Environments returned */
       200: {
         content: {
           "application/json": components["schemas"]["EnvironmentList"];
@@ -2514,11 +1965,11 @@ export interface operations {
       };
     };
   };
+  /**
+   * Add an Environment 
+   * @description Add a new gateway environment
+   */
   addEnvironment: {
-    /**
-     * Add an Environment 
-     * @description Add a new gateway environment
-     */
     /** @description Environment object that should to be added */
     requestBody: {
       content: {
@@ -2526,10 +1977,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description Created.
-       * Successful response with the newly created environment as entity in the body.
-       */
+      /** @description Created. Successful response with the newly created environment as entity in the body. */
       201: {
         content: {
           "application/json": components["schemas"]["Environment"];
@@ -2538,11 +1986,16 @@ export interface operations {
       400: components["responses"]["BadRequest"];
     };
   };
+  /**
+   * Update an Environment 
+   * @description Update a gateway Environment by environment Id
+   */
   updateEnvironment: {
-    /**
-     * Update an Environment 
-     * @description Update a gateway Environment by environment Id
-     */
+    parameters: {
+      path: {
+        environmentId: components["parameters"]["environmentId"];
+      };
+    };
     /** @description Environment object with updated information */
     requestBody: {
       content: {
@@ -2550,10 +2003,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description OK.
-       * Environment updated.
-       */
+      /** @description OK. Environment updated. */
       200: {
         content: {
           "application/json": components["schemas"]["Environment"];
@@ -2563,199 +2013,39 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Delete an Environment 
+   * @description Delete a Environment by Environment Id
+   */
   removeEnvironment: {
-    /**
-     * Delete an Environment 
-     * @description Delete a Environment by Environment Id
-     */
-    responses: {
-      /**
-       * @description OK.
-       * Environment successfully deleted.
-       */
-      200: {
-        content: {
-        };
-      };
-      404: components["responses"]["NotFound"];
-    };
-  };
-  getBotDetectionData: {
-    /**
-     * Get all Bot Detected Data
-     *  
-     * @description Get all bot detected data
-     */
-    responses: {
-      /**
-       * @description OK.
-       * Bot detected data returned.
-       */
-      200: {
-        headers: {
-          /** @description The content type of the body. */
-          "Content-Type"?: string;
-        };
-        content: {
-          "application/json": components["schemas"]["BotDetectionDataList"];
-        };
-      };
-      404: components["responses"]["NotFound"];
-    };
-  };
-  publishMonetizationRecords: {
-    /**
-     * Publish Usage Records 
-     * @description Publish usage records of monetized APIs
-     */
-    responses: {
-      /** @description Usage records successfully published. */
-      200: {
-        content: {
-          "application/json": components["schemas"]["PublishStatus"];
-        };
-      };
-      /** @description Request is sucessfully accepted for processing. */
-      202: {
-        content: {
-          "application/json": components["schemas"]["PublishStatus"];
-        };
-      };
-      404: components["responses"]["NotFound"];
-      500: components["responses"]["InternalServerError"];
-    };
-  };
-  getMonetizationUsagePublisherStatus: {
-    /**
-     * Get the Status of Monetization Usage Publisher 
-     * @description Get the status of monetization usage publisher
-     */
-    responses: {
-      /**
-       * @description OK.
-       * Status returned
-       */
-      200: {
-        content: {
-          "application/json": components["schemas"]["MonetizationUsagePublishInfo"];
-        };
-      };
-    };
-  };
-  getAllPendingWorkflows: {
-    /**
-     * Retrieve All Pending Workflow Processes
-     *  
-     * @description This operation can be used to retrieve list of workflow pending processes.
-     */
-    parameters?: {
-        /**
-         * @description We need to show the values of each workflow process separately .for that we use workflow type.
-         * Workflow type can be AM_APPLICATION_CREATION, AM_SUBSCRIPTION_CREATION,   AM_USER_SIGNUP, AM_APPLICATION_REGISTRATION_PRODUCTION, AM_APPLICATION_REGISTRATION_SANDBOX.
-         */
-      query?: {
-        workflowType?: "AM_APPLICATION_CREATION" | "AM_SUBSCRIPTION_CREATION" | "AM_USER_SIGNUP" | "AM_APPLICATION_REGISTRATION_PRODUCTION" | "AM_APPLICATION_REGISTRATION_SANDBOX" | "AM_SUBSCRIPTION_DELETION" | "AM_APPLICATION_DELETION" | "AM_API_STATE" | "AM_API_PRODUCT_STATE";
-      };
-    };
-    responses: {
-      /**
-       * @description OK.
-       * Workflow pending process list returned.
-       */
-      200: {
-        headers: {
-          /** @description The content type of the body. */
-          "Content-Type"?: string;
-        };
-        content: {
-          "application/json": components["schemas"]["WorkflowList"];
-        };
-      };
-      400: components["responses"]["BadRequest"];
-      404: components["responses"]["NotFound"];
-      406: components["responses"]["NotAcceptable"];
-    };
-  };
-  getWorkflowByExternalRef: {
-    /**
-     * Get Pending Workflow Details by External Workflow Reference
-     *  
-     * @description Using this operation, you can retrieve complete details of a pending workflow request that either belongs to application creation, application subscription, application registration, api state change, user self sign up.. You need to provide the External_Workflow_Reference of the workflow Request to retrieve it.
-     */
     parameters: {
-        /** @description from the external workflow reference we decide what is the the pending request that the are requesting. */
       path: {
-        externalWorkflowRef: string;
+        environmentId: components["parameters"]["environmentId"];
       };
     };
     responses: {
-      /**
-       * @description OK.
-       * Requested Workflow Pending is returned
-       */
+      /** @description OK. Environment successfully deleted. */
       200: {
-        content: {
-          "application/json": components["schemas"]["WorkflowInfo"];
-        };
-      };
-      /**
-       * @description Not Modified.
-       * Empty body because the client has already the latest version of the requested resource.
-       */
-      304: {
         content: {
         };
       };
       404: components["responses"]["NotFound"];
-      406: components["responses"]["NotAcceptable"];
     };
   };
-  updateWorkflowStatus: {
-    /**
-     * Update Workflow Status 
-     * @description This operation can be used to approve or reject a workflow task.
-     */
-    /** @description Workflow event that need to be updated */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["Workflow"];
-      };
-    };
-    responses: {
-      /**
-       * @description OK.
-       * Workflow request information is returned.
-       */
-      200: {
-        headers: {
-          /** @description The content type of the body. */
-          "Content-Type"?: string;
-        };
-        content: {
-          "application/json": components["schemas"]["Workflow"];
-        };
-      };
-      400: components["responses"]["BadRequest"];
-      404: components["responses"]["NotFound"];
-    };
-  };
+  /**
+   * Get Tenant Id of User
+   *  
+   * @description This operation is to get tenant id of the provided user
+   */
   getTenantInfoByUsername: {
-    /**
-     * Get Tenant Id of User
-     *  
-     * @description This operation is to get tenant id of the provided user
-     */
     parameters: {
-        /** @description The state represents the current state of the tenant. Supported states are [ active, inactive] */
       path: {
+        /** @description The state represents the current state of the tenant. Supported states are [ active, inactive] */
         username: string;
       };
     };
     responses: {
-      /**
-       * @description OK.
-       * Tenant id of the user retrieved.
-       */
+      /** @description OK. Tenant id of the user retrieved. */
       200: {
         headers: {
           /** @description The content type of the body. */
@@ -2769,23 +2059,20 @@ export interface operations {
       406: components["responses"]["NotAcceptable"];
     };
   };
+  /**
+   * Get Custom URL Info of a Tenant Domain
+   *  
+   * @description This operation is to get custom-url information of the provided tenant-domain
+   */
   getCustomUrlInfoByTenantDomain: {
-    /**
-     * Get Custom URL Info of a Tenant Domain
-     *  
-     * @description This operation is to get custom-url information of the provided tenant-domain
-     */
     parameters: {
-        /** @description The tenant domain name. */
       path: {
+        /** @description The tenant domain name. */
         tenantDomain: string;
       };
     };
     responses: {
-      /**
-       * @description OK.
-       * Custom url info of the tenant is retrieved.
-       */
+      /** @description OK. Custom url info of the tenant is retrieved. */
       200: {
         headers: {
           /** @description The content type of the body. */
@@ -2799,16 +2086,13 @@ export interface operations {
       406: components["responses"]["NotAcceptable"];
     };
   };
+  /**
+   * Get all API Categories 
+   * @description Get all API categories
+   */
   getAllCategories: {
-    /**
-     * Get all API Categories 
-     * @description Get all API categories
-     */
     responses: {
-      /**
-       * @description OK.
-       * Categories returned
-       */
+      /** @description OK. Categories returned */
       200: {
         content: {
           "application/json": components["schemas"]["APICategoryList"];
@@ -2816,11 +2100,11 @@ export interface operations {
       };
     };
   };
+  /**
+   * Add API Category 
+   * @description Add a new API category
+   */
   addCategory: {
-    /**
-     * Add API Category 
-     * @description Add a new API category
-     */
     /** @description API Category object that should to be added */
     requestBody: {
       content: {
@@ -2828,10 +2112,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description Created.
-       * Successful response with the newly created object as entity in the body.
-       */
+      /** @description Created. Successful response with the newly created object as entity in the body. */
       201: {
         content: {
           "application/json": components["schemas"]["APICategory"];
@@ -2840,11 +2121,16 @@ export interface operations {
       400: components["responses"]["BadRequest"];
     };
   };
+  /**
+   * Update an API Category 
+   * @description Update an API Category by category Id
+   */
   updateCategory: {
-    /**
-     * Update an API Category 
-     * @description Update an API Category by category Id
-     */
+    parameters: {
+      path: {
+        apiCategoryId: components["parameters"]["apiCategoryId"];
+      };
+    };
     /** @description API Category object with updated information */
     requestBody: {
       content: {
@@ -2852,10 +2138,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description OK.
-       * Label updated.
-       */
+      /** @description OK. Label updated. */
       200: {
         content: {
           "application/json": components["schemas"]["APICategory"];
@@ -2865,16 +2148,18 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Delete an API Category 
+   * @description Delete an API Category by API Category Id
+   */
   removeCategory: {
-    /**
-     * Delete an API Category 
-     * @description Delete an API Category by API Category Id
-     */
+    parameters: {
+      path: {
+        apiCategoryId: components["parameters"]["apiCategoryId"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * API Category successfully deleted.
-       */
+      /** @description OK. API Category successfully deleted. */
       200: {
         content: {
         };
@@ -2882,16 +2167,13 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Retrieve Admin Settings 
+   * @description Retrieve admin settings
+   */
   getAdminSettings: {
-    /**
-     * Retrieve Admin Settings 
-     * @description Retrieve admin settings
-     */
     responses: {
-      /**
-       * @description OK.
-       * Settings returned
-       */
+      /** @description OK. Settings returned */
       200: {
         content: {
           "application/json": components["schemas"]["Settings"];
@@ -2900,284 +2182,13 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
-  systemScopesScopeNameGet: {
-    /**
-     * Retrieve Scopes for a Particular User 
-     * @description This operation will return the scope list of particular user
-     * In order to get it, we need to pass the userId as a query parameter
-     */
-    parameters?: {
-      query?: {
-        username?: string;
-      };
-    };
-    responses: {
-      /**
-       * @description OK.
-       * Particular scope exists for the given user.
-       */
-      200: {
-        content: {
-          "application/json": components["schemas"]["ScopeSettings"];
-        };
-      };
-      400: components["responses"]["BadRequest"];
-      404: components["responses"]["NotFound"];
-    };
-  };
-  systemScopesGet: {
-    /**
-     * Get Role Scope Mappings
-     *  
-     * @description This operation is used to get the list of role scope mapping from tenant-conf for the APK admin dashboard
-     */
-    responses: {
-      /**
-       * @description OK.
-       * The list of role scope mappings are returned.
-       */
-      200: {
-        headers: {
-          /** @description The content type of the body. */
-          "Content-Type"?: string;
-        };
-        content: {
-          "application/json": components["schemas"]["ScopeList"];
-        };
-      };
-      500: components["responses"]["InternalServerError"];
-    };
-  };
-  updateRolesForScope: {
-    /**
-     * Update Roles For Scope
-     *  
-     * @description This operation is used to update the roles for all scopes
-     */
-    /** @description Scope list object with updated scope to role mappings */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ScopeList"];
-      };
-    };
-    responses: {
-      /**
-       * @description OK.
-       * Successful response with the newly added roles.
-       */
-      200: {
-        headers: {
-          /** @description The content type of the body. */
-          "Content-Type"?: string;
-        };
-        content: {
-          "application/json": components["schemas"]["ScopeList"];
-        };
-      };
-      400: components["responses"]["BadRequest"];
-      500: components["responses"]["InternalServerError"];
-    };
-  };
-  getRoleAliasMappings: {
-    /**
-     * Retrieve Role Alias Mappings 
-     * @description This operation can be used to retrieve role alias mapping
-     */
-    responses: {
-      /**
-       * @description OK.
-       * The list of role mappings are returned.
-       */
-      200: {
-        headers: {
-          /** @description The content type of the body. */
-          "Content-Type"?: string;
-        };
-        content: {
-          "application/json": components["schemas"]["RoleAliasList"];
-        };
-      };
-      404: components["responses"]["NotFound"];
-    };
-  };
-  addRoleAliasMapping: {
-    /**
-     * Add a New Role Alias 
-     * @description This operation can be used to add a new role alias mapping for system scope roles
-     */
-    /** @description role-alias mapping */
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RoleAliasList"];
-      };
-    };
-    responses: {
-      /**
-       * @description OK.
-       * Role mapping alias returned
-       */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RoleAliasList"];
-        };
-      };
-      400: components["responses"]["BadRequest"];
-      500: components["responses"]["InternalServerError"];
-    };
-  };
-  validateSystemRole: {
-    /**
-     * Check Whether Given Role Name already Exist 
-     * @description Using this operation, user can check a given role name exists or not.
-     */
-    responses: {
-      /** @description OK. Requested role name exists. */
-      200: {
-        content: {
-        };
-      };
-      404: components["responses"]["NotFound"];
-      500: components["responses"]["InternalServerError"];
-    };
-  };
-  exportTenantTheme: {
-    /**
-     * Export a DevPortal Tenant Theme 
-     * @description This operation can be used to export a DevPortal tenant theme as a zip file.
-     */
-    responses: {
-      /**
-       * @description OK.
-       * Tenant Theme Exported Successfully.
-       */
-      200: {
-        headers: {
-          /** @description The content type of the body. */
-          "Content-Type"?: string;
-        };
-        content: {
-          "application/zip": string;
-        };
-      };
-      403: components["responses"]["Forbidden"];
-      404: components["responses"]["NotFound"];
-      500: components["responses"]["InternalServerError"];
-    };
-  };
-  importTenantTheme: {
-    /**
-     * Import a DevPortal Tenant Theme 
-     * @description This operation can be used to import a DevPortal tenant theme.
-     */
-    requestBody: {
-      content: {
-        "multipart/form-data": {
-          /**
-           * Format: binary 
-           * @description Zip archive consisting of tenant theme configuration
-           */
-          file: string;
-        };
-      };
-    };
-    responses: {
-      /**
-       * @description Ok.
-       * Tenant Theme Imported Successfully.
-       */
-      200: {
-        content: {
-        };
-      };
-      403: components["responses"]["Forbidden"];
-      413: components["responses"]["PayloadTooLarge"];
-      500: components["responses"]["InternalServerError"];
-    };
-  };
-  exportTenantConfig: {
-    /**
-     * Export a tenant-Config. 
-     * @description This operation can be used to export a tenant-config.json used in deployment.
-     */
-    responses: {
-      /**
-       * @description OK.
-       * Tenant config Exported Successfully.
-       */
-      200: {
-        headers: {
-          /** @description The content type of the body. */
-          "Content-Type"?: string;
-        };
-        content: {
-          "application/json": string;
-        };
-      };
-      403: components["responses"]["Forbidden"];
-      404: components["responses"]["NotFound"];
-      500: components["responses"]["InternalServerError"];
-    };
-  };
-  updateTenantConfig: {
-    /**
-     * Update a tenant-config. 
-     * @description This operation can be used to update tenant-config.
-     */
-    /** @description tenant-config */
-    requestBody: {
-      content: {
-        "application/json": string;
-      };
-    };
-    responses: {
-      /**
-       * @description OK.
-       * Role mapping alias returned
-       */
-      200: {
-        content: {
-          "application/json": string;
-        };
-      };
-      403: components["responses"]["Forbidden"];
-      413: components["responses"]["PayloadTooLarge"];
-      500: components["responses"]["InternalServerError"];
-    };
-  };
-  exportTenantConfigSchema: {
-    /**
-     * Export a tenant-Config-Schema. 
-     * @description This operation can be used to export a tenant-config-schema.json used in deployment.
-     */
-    responses: {
-      /**
-       * @description OK.
-       * Tenant config schema exported successfully.
-       */
-      200: {
-        headers: {
-          /** @description The content type of the body. */
-          "Content-Type"?: string;
-        };
-        content: {
-          "application/json": string;
-        };
-      };
-      403: components["responses"]["Forbidden"];
-      404: components["responses"]["NotFound"];
-      500: components["responses"]["InternalServerError"];
-    };
-  };
+  /**
+   * Get all Key managers 
+   * @description Get all Key managers
+   */
   getAllKeyManagers: {
-    /**
-     * Get all Key managers 
-     * @description Get all Key managers
-     */
     responses: {
-      /**
-       * @description OK.
-       * KeyManagers returned
-       */
+      /** @description OK. KeyManagers returned */
       200: {
         content: {
           "application/json": components["schemas"]["KeyManagerList"];
@@ -3185,11 +2196,11 @@ export interface operations {
       };
     };
   };
+  /**
+   * Add a new API Key Manager 
+   * @description Add a new API Key Manager
+   */
   addNewKeyManager: {
-    /**
-     * Add a new API Key Manager 
-     * @description Add a new API Key Manager
-     */
     /** @description Key Manager object that should to be added */
     requestBody: {
       content: {
@@ -3197,10 +2208,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description Created.
-       * Successful response with the newly created object as entity in the body.
-       */
+      /** @description Created. Successful response with the newly created object as entity in the body. */
       201: {
         content: {
           "application/json": components["schemas"]["KeyManager"];
@@ -3209,16 +2217,18 @@ export interface operations {
       400: components["responses"]["BadRequest"];
     };
   };
+  /**
+   * Get a Key Manager Configuration 
+   * @description Retrieve a single Key Manager Configuration. We should provide the Id of the KeyManager as a path parameter.
+   */
   getKeyManagerConfiguration: {
-    /**
-     * Get a Key Manager Configuration 
-     * @description Retrieve a single Key Manager Configuration. We should provide the Id of the KeyManager as a path parameter.
-     */
+    parameters: {
+      path: {
+        keyManagerId: components["parameters"]["keyManagerId"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * KeyManager Configuration returned
-       */
+      /** @description OK. KeyManager Configuration returned */
       200: {
         headers: {
           /** @description The content type of the body. */
@@ -3232,11 +2242,16 @@ export interface operations {
       406: components["responses"]["NotAcceptable"];
     };
   };
+  /**
+   * Update a Key Manager 
+   * @description Update a Key Manager by keyManager ID
+   */
   updateKeyManager: {
-    /**
-     * Update a Key Manager 
-     * @description Update a Key Manager by keyManager ID
-     */
+    parameters: {
+      path: {
+        keyManagerId: components["parameters"]["keyManagerId"];
+      };
+    };
     /** @description Key Manager object with updated information */
     requestBody: {
       content: {
@@ -3244,10 +2259,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description OK.
-       * Label updated.
-       */
+      /** @description OK. Label updated. */
       200: {
         content: {
           "application/json": components["schemas"]["KeyManager"];
@@ -3257,16 +2269,18 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Delete a Key Manager 
+   * @description Delete a Key Manager by keyManager id
+   */
   removeKeyManager: {
-    /**
-     * Delete a Key Manager 
-     * @description Delete a Key Manager by keyManager id
-     */
+    parameters: {
+      path: {
+        keyManagerId: components["parameters"]["keyManagerId"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Key Manager successfully deleted.
-       */
+      /** @description OK. Key Manager successfully deleted. */
       200: {
         content: {
         };
@@ -3274,11 +2288,11 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Retrieve Well-known information from Key Manager Well-known Endpoint 
+   * @description Retrieve well-known information from key manager's well-known endpoint
+   */
   getWellKnownInfoKeyManager: {
-    /**
-     * Retrieve Well-known information from Key Manager Well-known Endpoint 
-     * @description Retrieve well-known information from key manager's well-known endpoint
-     */
     requestBody?: {
       content: {
         "multipart/form-data": {
@@ -3294,10 +2308,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description OK.
-       * KeyManagers returned
-       */
+      /** @description OK. KeyManagers returned */
       200: {
         content: {
           "application/json": components["schemas"]["KeyManagerWellKnownResponse"];
@@ -3305,16 +2316,13 @@ export interface operations {
       };
     };
   };
+  /**
+   * Get all Organization 
+   * @description Get all Organization
+   */
   getAllOrganization: {
-    /**
-     * Get all Organization 
-     * @description Get all Organization
-     */
     responses: {
-      /**
-       * @description OK.
-       * Organization returned
-       */
+      /** @description OK. Organization returned */
       200: {
         content: {
           "application/json": components["schemas"]["OrganizationList"];
@@ -3322,11 +2330,11 @@ export interface operations {
       };
     };
   };
+  /**
+   * Add Organization 
+   * @description Add a new Organization
+   */
   addOrganization: {
-    /**
-     * Add Organization 
-     * @description Add a new Organization
-     */
     /** @description Organization object that should to be added */
     requestBody: {
       content: {
@@ -3334,10 +2342,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description Created.
-       * Successful response with the newly created object as entity in the body.
-       */
+      /** @description Created. Successful response with the newly created object as entity in the body. */
       201: {
         content: {
           "application/json": components["schemas"]["Organization"];
@@ -3346,17 +2351,19 @@ export interface operations {
       400: components["responses"]["BadRequest"];
     };
   };
+  /**
+   * Get the details of an Organization
+   *  
+   * @description This operation can be used to get the details of an Organization by specifying its id.
+   */
   getOrganizationById: {
-    /**
-     * Get the details of an Organization
-     *  
-     * @description This operation can be used to get the details of an Organization by specifying its id.
-     */
+    parameters: {
+      path: {
+        organizationId: components["parameters"]["organizationId"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Application details returned.
-       */
+      /** @description OK. Application details returned. */
       200: {
         content: {
           "application/json": components["schemas"]["Organization"];
@@ -3367,11 +2374,16 @@ export interface operations {
       406: components["responses"]["NotAcceptable"];
     };
   };
+  /**
+   * Update an Organization 
+   * @description Update an Organization by organization Id
+   */
   updateOrganization: {
-    /**
-     * Update an Organization 
-     * @description Update an Organization by organization Id
-     */
+    parameters: {
+      path: {
+        organizationId: components["parameters"]["organizationId"];
+      };
+    };
     /** @description Organization object with updated information */
     requestBody: {
       content: {
@@ -3379,10 +2391,7 @@ export interface operations {
       };
     };
     responses: {
-      /**
-       * @description OK.
-       * Label updated.
-       */
+      /** @description OK. Label updated. */
       200: {
         content: {
           "application/json": components["schemas"]["Organization"];
@@ -3392,16 +2401,18 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Delete an Organization 
+   * @description Delete an Organization by API Organization Id
+   */
   removeOrganization: {
-    /**
-     * Delete an Organization 
-     * @description Delete an Organization by API Organization Id
-     */
+    parameters: {
+      path: {
+        organizationId: components["parameters"]["organizationId"];
+      };
+    };
     responses: {
-      /**
-       * @description OK.
-       * Organization successfully deleted.
-       */
+      /** @description OK. Organization successfully deleted. */
       200: {
         content: {
         };
@@ -3409,17 +2420,14 @@ export interface operations {
       404: components["responses"]["NotFound"];
     };
   };
+  /**
+   * Authenticate Organization info
+   *  
+   * @description This operation can be used to authenticate Organization by specifying its claimValue.
+   */
   getOrganizationByClaimValue: {
-    /**
-     * Authenticate Organization info
-     *  
-     * @description This operation can be used to authenticate Organization by specifying its claimValue.
-     */
     responses: {
-      /**
-       * @description OK.
-       * Application details returned.
-       */
+      /** @description OK. Application details returned. */
       200: {
         content: {
           "application/json": components["schemas"]["Organization"];
