@@ -738,7 +738,7 @@ end`
 		}
 		logger.LoggerInterceptor.Info("======================================srilanka3==============================================")
 		// logger.LoggerInterceptor.Info(contextExtensions)
-		// logger.LoggerInterceptor.Info(params)
+		logger.LoggerInterceptor.Info(params.apiProperty.Spec.Properties)
 		luaPerFilterConfig = lua.LuaPerRoute{
 			Override: &lua.LuaPerRoute_SourceCode{
 				SourceCode: &corev3.DataSource{
